@@ -1,0 +1,19 @@
+@Echo OFF
+
+REM USAGE: command line arg of length can be optionally passed 
+
+REM Generate random midi - pass command line arg of length
+    set                          MIDI=c:\delme.mid
+    if exist "%MIDI%" (*del /q "%MIDI%")
+    generate_midi_randomly.py   %MIDI% %*
+    call validate-env-var        MIDI
+
+REM Convert midi to wav - TODO: allow passing of soundfont file
+    %COLOR_RUN%
+    set WAV=c:\delme.wav
+    if exist "%WAV%" (*del /q "%WAV%")
+    convert_midi_to_wav_with_soundfont.py %MIDI% %WAV% >nul
+
+REM Play wav file
+    play_wav_file.py %WAV%
+
