@@ -1,1 +1,1 @@
-@call randmidi 
+@python generate_and_play_random_midi.py

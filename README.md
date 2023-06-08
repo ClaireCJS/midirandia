@@ -6,6 +6,7 @@ It creates a random MIDI file, converts it to WAV using a soundfont file, then p
 
 It's basically a funny little noisemaker.
 
+A video of an early prototype version with an inferior soundfont can be see here: https://www.youtube.com/watch?v=XNLs9bcUVfA&t=4s
 
 ## Subtools can all be used separately at the command line
 
