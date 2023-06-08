@@ -1,0 +1,5 @@
+colorama==0.4.6
+midi2audio==0.1.1
+mido==1.2.10
+pydub==0.25.1
+simpleaudio==1.0.4
