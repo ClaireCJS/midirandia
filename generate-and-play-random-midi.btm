@@ -1,7 +1,7 @@
 @Echo OFF
 
 
-generate_and_play_random_midi.py
+generate_and_play_random_midi.py %*
 
 
 REM can also do it piece-by-piece, if you want:
@@ -12,7 +12,7 @@ REM                    if exist "%MIDI%" (*del /q "%MIDI%")
 REM                    generate_midi_randomly.py   %MIDI% %*
 REM                    call validate-env-var        MIDI
 REM
-REM                REM Convert midi to wav - TODO: allow passing of soundfont file
+REM                REM Convert midi to wav using a soundfont file
 REM                    %COLOR_RUN%
 REM                    set WAV=c:\delme.wav
 REM                    if exist "%WAV%" (*del /q "%WAV%")
