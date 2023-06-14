@@ -1,0 +1,81 @@
+@Echo OFF
+
+rem USAGE: $0 whatever.py   - generate spec file from whatever.py
+rem USAGE: $0 whatever.spec - compile using spec file
+rem USAGE: $0               - compile using spec file if one exists
+rem USAGE: $0 "built"       - goto post_build_verification
+
+rem CONFIGURATION: Define project/script.py name:
+    set BASENAME=%CURRENT_FOLDER_NAME%
+
+rem SETUP: Set variables
+    set MODE=%1
+    set OUR_BUILD_DIR=dist\%BASENAME%
+    set CREATED_EXE_FILE=%OUR_BUILD_DIR%\%BASENAME%.exe
+    set CURRENT_FOLDER_NAME=%@NAME[%_CWP]
+
+rem SETUP: Validate Mode parameter
+    :Mode_Validation
+        REM %1/%MODE: can be nothing, a .py that exists, a .spec that exists, blank, or "built"/post/already/done
+        
+        if "%MODE%" eq "" (goto :Mode_Is_Valid)
+
+        REM so first, let's check if it's a valid hard-coded value:
+        if "%MODE" eq "built" .or. "%MODE" eq "already" .or. "%MODE" eq "post" .or. "%MODE" eq "done" goto :Mode_Is_Vaid
+
+        REM at this point, it's not a hard-coded vlaue, but a file, so it should exist:
+        if not exist "%MODE%" (call error "Mode of %MODE% isn't a file that exists" %+ goto :END)
+
+        REM now that we know it's a file that doesn't exist, let's check it's extension
+        call validate-file-extension %MODE% "py spec"
+    :Mode_Is_Valid
+
+
+rem BRANCHING: Skip the build if we say to
+    set SKIPPED_BUILD=0
+    if "%MODE" eq "built" .or. "%MODE" eq "already" .or. "%MODE" eq "post" .or. "%MODE" eq "done" (
+        set SKIPPED_BUILD=1
+        goto :built
+    ) else (
+        if "%MODE%" ne "" (call error "Sorry, mode parameter of '%MODE%' is invalid. Should be nothing or 'built'/'already'/'post'" %+ goto :END)
+    )
+
+rem ADVICE: Let us know about some options we may forget about
+    call advice if we lose our spec file the timezone bug can likely be fixed by adding --collect-data dateutil to our build options here
+    call advice remember: --onefile, --onedir
+
+rem SETUP: update our local code to our local GIT repository
+    call update-from-BAT
+
+rem "MAKE CLEAN": Clean out files from previous builds
+    :Make
+    call validate-in-path clean-python-build-and-dist-folders
+    call                  clean-python-build-and-dist-folders
+
+rem "MAKE MAKE": Compile the EXE file ***************************************************************************************
+    pushd
+    REM optionally add --onedir --onefile here 
+    REM we compile via the spec file, if it exists
+    set SPEC_FILE=%BASENAME%.spec
+    call validate-in-path py2exe.bat
+    call validate-env-var SPEC_FILE
+    call debug "- Compiling with spec file of %SPEC_FILE%"
+    call py2exe.bat %SPEC_FILE%  %*
+    popd
+
+rem POST: Double-check EXE was created
+    :built
+    :post_build_verification
+    if not exist %CREATED_EXE_FILE% (
+        set MSG=Oops, EXE doesn't exist, which means our compilation was not successful!
+        if %SKIPPED_BUILD eq 1 (call warning %MSG%) 
+        else                   (call error   %MSG%)
+        if %SKIPPED_BUILD eq 1 (goto :Make        )
+    )
+    call validate-env-var CREATED_EXE_FILE
+    echo.
+    %COLOR_SUCCESS%
+ 
+rem POST: Create a ZIP file for distribution
+    call create-distribution %BASENAME%
+
