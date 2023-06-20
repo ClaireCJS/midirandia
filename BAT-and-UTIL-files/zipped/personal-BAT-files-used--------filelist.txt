@@ -3,5 +3,5 @@
 2023-06-02  10:46          3,259   61%  compile-python-project-into-EXE.btm
 2023-05-28  09:54             38   -5%  validate-env-var.bat
 2023-06-10  23:23             89    4%  validate-environment-variables.bat
-2023-06-14  23:38          8,646   72%  update-from-BAT-via-manifest.bat
 2023-06-19  23:21         11,623   75%  validate-environment-variable.bat
+2023-06-20  14:30          8,832   71%  update-from-BAT-via-manifest.bat
